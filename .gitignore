@@ -1,4 +1,5 @@
 archive/*
+output.rpt
 log/*
 CMakeFiles/*
 CMakeCache.txt
