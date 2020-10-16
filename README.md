@@ -1,2 +1,9 @@
+
 # lipo-b--annealing
-tuned b* annealing for pcb placement
+
+Partially based on Prof. Yao-Wen Chang's implementation and materials
+
+### Build
+>>./clean
+>>cmake .
+>>make
