@@ -47,7 +47,7 @@ public:
     //reading input.block
     string ign;
     _blcks.resize(1, {0, 0, 0, "NULL"});
-    read_in(_blcks, fblcks, _blcks_id, _Nblcks, 1);
+    read_in(_blcks, fblcks, _blcks_id, _Nblcks, 4);
     read_in(_blcks, fblcks, _blcks_id, _Ntrmns, 2);
     fblcks.close();
     int cnt = 0;
@@ -142,9 +142,9 @@ public:
     out2 << "NumTerminals: " << _Ntrmns << '\n';
     out2 << '\n';
     for(ID i = 1; i<=_Nblcks; ++i) {
-      out2 << _blcks[i]._name << " " << int(_blcks[i]._x) << " "
-          << int(_blcks[i]._y) << " " << int(_blcks[i]._x+_blcks[i]._w) << " "
-          << int(_blcks[i]._y+_blcks[i]._h) << '\n';
+      out2 << _blcks[i]._name << " " << int(_blcks[i]._w) << " "
+          << int(_blcks[i]._h) << " " << int(_blcks[i]._x) << " "
+          << int(_blcks[i]._y) << '\n';
     }
     out2 << '\n';
     for(ID i = 1; i<=_Ntrmns; ++i) {
@@ -174,13 +174,15 @@ private:
                ID num, uchar len) {
     const float R = _R();
     for(ID i = 1; i<=num; ++i) {
-      string name; LEN w, h;
+      string name; LEN w, h, x, y;
       ifs >> name;
       if(len == 2) { string ign; ifs >> ign; }
       ifs >> w >> h;
+      if(len == 4) { ifs >> x >> y; }
       ID id = i + (len == 2)*_Nblcks;
       m[name] = id;
-      if(len == 1) vec.emplace_back(id, w, h, name);
+      //if(len == 1) vec.emplace_back(id, w, h, name);
+      if(len == 4) vec.emplace_back(id, w, h, name, x, y);
       else vec.emplace_back(id, 0, 0, name, w, h);
     }
   }

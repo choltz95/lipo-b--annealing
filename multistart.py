@@ -20,6 +20,7 @@ def _partial(func, *part_args):
 
 def _process_worker(cmd):
     cmd = [str(cm) for cm in cmd]
+    print(cmd)
     return run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
 
 def _place_worker(cmd_path, cmd_params):
@@ -52,13 +53,13 @@ def _sample_worker(cmd_path, cmd_params, idx):
 
     return hpwl
 
-def _multistart_worker(cmd_path, design_name, pid, idx):
-    outfname = 'tmp/{}_{}'.format(pid, idx)
+def _multistart_worker(cmd_path, design_name,og_design_name, pid, idx):
+    outfname = '{}'.format(idx)
 
     #_fn = _partial(_sample_worker, cmd_path, design_name, idx)
 
     start_time = time.time()
-    cost = _sample_worker(cmd_path, (design_name,outfname,), idx)
+    cost = _sample_worker(cmd_path, (design_name, og_design_name, outfname,), idx)
     opt_time = time.time() - start_time
 
     #tqdm.write('design: {} params: {} cost: {} in {} sec'.format(design_name, ' '.join([str(x) for x in p]), cost, opt_time))
@@ -71,7 +72,7 @@ def multistart(cmd_path, design_name, max_iterations, k, ncores=1):
     curids = list(range(k))
     curfnames = [design_name]*k
     # spawn an annealer for each instance
-    res = Parallel(n_jobs=ncores)(delayed(_worker)(fname, pid, idx) for idx, (fname, pid) in enumerate(tqdm(zip(curfnames,curids))))
+    res = Parallel(n_jobs=ncores)(delayed(_worker)(fname, design_name, pid, idx) for idx, (fname, pid) in enumerate(tqdm(zip(curfnames,curids))))
     for r in res:
         c, pid, fname = r
         ms.add(pid, c, fname)
@@ -80,25 +81,27 @@ def multistart(cmd_path, design_name, max_iterations, k, ncores=1):
     for _ in range(max_iterations):
         # get top-k results
         curccosts, curids, curfnames = ms.get_topk()
+        new_indices = list(range(len(ms.ids), len(ms.ids)+k))
         # spawn an annealer for each instance
-        res = Parallel(n_jobs=nccores)(delayed(_worker)(fname, pid, idx) for idx, (fname, pid) in enumerate(tqdm(zip(curfnames,curids))))
+        res = Parallel(n_jobs=ncores)(delayed(_worker)(fname, design_name, pid, idx) for fname, pid, idx in tqdm(zip(curfnames,curids, new_indices)))
         for r in res:
             c, pid, fname = r
-            ms.add(self, pid, c, fname)
+            ms.add(pid, c, fname)
 
     return ms
 
 def main():
-    cmd_path = '/Users/orange3xchicken/lipo-b--annealing/run'
+    cmd_path = '/Users/.../lipo-b--annealing/run'
     design_name = 'ami33'
     ncores = 1
-    max_iterations = 0
+    max_iterations = 1
     k = 5 # split on top 5 results
 
     # multistart object
     ms = multistart(cmd_path, design_name, max_iterations, k, ncores)
-
-    print('hpwl: {} fname: {}'.format(ms.get_topk()[0][0], ms.get_topk()[-1][0]))
+    ms.tree.print_tree()
+    print()
+    print('hpwl: {} fname: ./tmp/{}.rpt'.format(ms.get_topk()[0][0], ms.get_topk()[-1][0]))
 
 
 if __name__ == "__main__":

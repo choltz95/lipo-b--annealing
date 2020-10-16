@@ -2,7 +2,7 @@
 import sys
 import numpy as np
 
-with open("input/"+sys.argv[1]+".block", 'r') as f:
+with open("tmp/"+sys.argv[1]+".block", 'r') as f:
   tmp = f.readline().split()
   width = int(tmp[1])
   height = int(tmp[2])
@@ -21,7 +21,7 @@ with open("input/"+sys.argv[1]+".block", 'r') as f:
     if len(tmp) == 0: continue
     terminals.append([tmp[0], int(tmp[2]), int(tmp[3])])
 
-with open("input/"+sys.argv[1]+".nets", 'r') as f:
+with open("tmp/"+sys.argv[2]+".nets", 'r') as f:
   num_nets = int(f.readline().split()[1])
   nets = []
   netsxoffsets = []
@@ -42,7 +42,7 @@ with open("input/"+sys.argv[1]+".nets", 'r') as f:
     netsxoffsets.append(xoffset)
     netsyoffsets.append(yoffset)
 
-with open(sys.argv[2], 'r') as f:
+with open("tmp/"+sys.argv[3], 'r') as f:
   cost = float(f.readline())
   wirelength = float(f.readline())
   chip_area = float(f.readline())

@@ -167,7 +167,7 @@ void my_main(int argc, char** argv) {
   ifstream fblcks(argv[2], ifstream::in);
   ifstream fnets(argv[3], ifstream::in);
   string rptPost = ".rpt";
-  string blksPost = ".blocks";
+  string blksPost = ".block";
   ofstream outs1(argv[4]+rptPost, ifstream::out);
   ofstream outs2(argv[4]+blksPost, ifstream::out);
   int Nnets, W, H, Nblcks, Ntrmns;
