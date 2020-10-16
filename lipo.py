@@ -11,6 +11,7 @@ import sys, time
 
 def _process_worker(cmd):
     cmd = [str(cm) for cm in cmd]
+    print(cmd)
     return run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
 
 def _place_worker(cmd_path, cmd_params):    
@@ -86,6 +87,7 @@ def _lipo_worker(cmd_path, design_name):
 def main():
     cmd_path = '/home/orange3xchicken/tuned-bstar-annealing/run'
     design_names = ['ami33', 'apte', 'hp','xerox','ami49']
+    design_names=['ami33']
     design_name = 'ami33'
     cores = 1
 
