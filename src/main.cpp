@@ -166,9 +166,11 @@ private:
 void my_main(int argc, char** argv) {
   ifstream fblcks(argv[2], ifstream::in);
   ifstream fnets(argv[3], ifstream::in);
-  ofstream outs(argv[4], ifstream::out);
+  string rptPost = ".rpt";
+  string blksPost = ".blocks";
+  ofstream outs1(argv[4]+rptPost, ifstream::out);
+  ofstream outs2(argv[4]+blksPost, ifstream::out);
   int Nnets, W, H, Nblcks, Ntrmns;
-
 
   string ign;
   fnets >> ign >> Nnets;
@@ -198,8 +200,9 @@ void my_main(int argc, char** argv) {
   }
   fp.restore(costs[0]<costs[1] ? trees[0] : trees[1]);
   fp.init();
-  fp.output(outs);
-  outs.close();
+  fp.output(outs1, outs2);
+  outs1.close();
+  outs2.close();
 }
 int main(int argc, char** argv) {
   ios_base::sync_with_stdio(false);

@@ -14,7 +14,7 @@ def _process_worker(cmd):
     print(cmd)
     return run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
 
-def _place_worker(cmd_path, cmd_params):    
+def _place_worker(cmd_path, cmd_params):
     cmd = ['sh', cmd_path, *cmd_params]
     cmd.insert(-1,2)
     cmd.insert(5,0.0)
@@ -40,7 +40,6 @@ def _sample_worker(cmd_path, cmd_params, *sample_params):
     hpwl = float(result[-6][-1])
 
     log = ','.join([str(sp) for sp in sample_params]+[str(cost), str(area),str(hpwl)])
-    #print(log)
 
     with open('./log/'+cmd_params+'_log.txt','a+') as f:
         f.write( log + '\n')
@@ -68,7 +67,7 @@ def _lipo_worker(cmd_path, design_name):
 
     #params = [Ps, alphas, betas, ks, rnds, cs]
     params = [Ps, betas, ks, cs]
-    
+
     lbs = [p[0] for p in params]
     ubs = [p[1] for p in params]
 
@@ -85,7 +84,7 @@ def _lipo_worker(cmd_path, design_name):
     tqdm.write('design: {} params: {} cost: {} in {} sec'.format(design_name, ' '.join([str(x) for x in p]), cost, opt_time))
 
 def main():
-    cmd_path = '/home/orange3xchicken/tuned-bstar-annealing/run'
+    cmd_path = '/home/.../tuned-bstar-annealing/run'
     design_names = ['ami33', 'apte', 'hp','xerox','ami49']
     design_names=['ami33']
     design_name = 'ami33'

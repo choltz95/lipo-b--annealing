@@ -1,4 +1,4 @@
-# Install script for directory: /Users/orange3xchicken/tuned-bstar-annealing
+# Install script for directory: /Users/orange3xchicken/lipo-b--annealing
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/orange3xchicken/tuned-bstar-annealing/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/orange3xchicken/lipo-b--annealing/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

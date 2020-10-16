@@ -122,18 +122,34 @@ public:
     }
     return make_tuple(hpwl, MAX_X, MAX_Y);
   }
-  void output(ostream& out) const {
+  void output(ostream& out1, ostream& out2) const {
     //assert(_has_init);
     int width, height, hpwl; tie(hpwl, width, height) = cost();
-    out << setprecision(13) << _alpha*width*height + (1-_alpha)*hpwl/2. << '\n';
-    out << hpwl/2. << '\n';
-    out << width*height << '\n';
-    out << width << " " << height << '\n';
-    out << double(clock()-start_time)/CLOCKS_PER_SEC << '\n';
+    out1 << setprecision(13) << _alpha*width*height + (1-_alpha)*hpwl/2. << '\n';
+    out1 << hpwl/2. << '\n';
+    out1 << width*height << '\n';
+    out1 << width << " " << height << '\n';
+    out1 << double(clock()-start_time)/CLOCKS_PER_SEC << '\n';
     for(ID i = 1; i<=_Nblcks; ++i) {
-      out << _blcks[i]._name << " " << int(_blcks[i]._x) << " "
+      out1 << _blcks[i]._name << " " << int(_blcks[i]._x) << " "
           << int(_blcks[i]._y) << " " << int(_blcks[i]._x+_blcks[i]._w) << " "
           << int(_blcks[i]._y+_blcks[i]._h) << '\n';
+    }
+
+    //int width, height, hpwl; tie(hpwl, width, height) = cost();
+    out2 << "Outline: "  << width << " " << height << '\n';
+    out2 << "NumBlocks: " << _Nblcks << '\n';
+    out2 << "NumTerminals: " << _Ntrmns << '\n';
+    out2 << '\n';
+    for(ID i = 1; i<=_Nblcks; ++i) {
+      out2 << _blcks[i]._name << " " << int(_blcks[i]._x) << " "
+          << int(_blcks[i]._y) << " " << int(_blcks[i]._x+_blcks[i]._w) << " "
+          << int(_blcks[i]._y+_blcks[i]._h) << '\n';
+    }
+    out2 << '\n';
+    for(ID i = 1; i<=_Ntrmns; ++i) {
+      out2 << _blcks[_Nblcks+i]._name << " " << "terminal " << int(_blcks[_Nblcks+i]._x) << " "
+          << int(_blcks[_Nblcks+i]._y) << '\n';
     }
   }
   void perturb() {
