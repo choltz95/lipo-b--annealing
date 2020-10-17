@@ -72,9 +72,6 @@ def _sample_worker(cmd_path, cmd_params, idx, level):
     cost = float(result[-4][-1])
     area = float(result[-8][-1])
     hpwl = float(result[-6][-1])
-
-    #log = ','.join([str(sp) for sp in sp]+[str(cost), str(area),str(hpwl)])
-
     return hpwl
 
 """
@@ -90,7 +87,8 @@ def _multistart_worker(ms, cmd_path, design_name, og_design_name, pid, idx):
     cost = _sample_worker(cmd_path, (design_name, og_design_name, outfname,), idx, level+1)
     opt_time = time.time() - start_time
 
-    #tqdm.write('design: {} params: {} cost: {} in {} sec'.format(design_name, ' '.join([str(x) for x in p]), cost, opt_time))
+    #tqdm.write('design: {} params: {} cost: {} in {} sec'.format(design_name,
+    #                                                              ' '.join([str(x) for x in p]), cost, opt_time))
     return cost, pid, outfname
 
 """
@@ -107,7 +105,8 @@ def multistart(cmd_path, design_name, max_iterations, k, ncores=1):
     #Do initial set of placements on the given design
     curids = [0]*k
     curfnames = [design_name]*k
-    res = Parallel(n_jobs=ncores)(delayed(_worker)(fname, design_name, pid, idx) for idx, (fname, pid) in enumerate(tqdm(zip(curfnames,curids))))
+    res = Parallel(n_jobs=ncores)(delayed(_worker)(fname, design_name, pid, idx)
+                                  for idx, (fname, pid) in enumerate(tqdm(zip(curfnames,curids))))
     for r in res:
         c, pid, fname = r
         ms.add(pid, c, fname)
@@ -116,9 +115,10 @@ def multistart(cmd_path, design_name, max_iterations, k, ncores=1):
     for _ in range(max_iterations):
         # get top-k results and generate new ids
         curccosts, curids, curfnames = ms.get_topk()
-        new_indices = list(range(len(ms.ids), len(ms.ids)+k))
+        new_indices = ms.get_k_new_ids()
         # spawn an annealer for each top-k instance
-        res = Parallel(n_jobs=ncores)(delayed(_worker)(fname, design_name, pid, idx) for fname, pid, idx in tqdm(zip(curfnames,curids, new_indices)))
+        res = Parallel(n_jobs=ncores)(delayed(_worker)(fname, design_name, pid, idx)
+                                      for fname, pid, idx in tqdm(zip(curfnames,curids, new_indices)))
         for r in res:
             c, pid, fname = r
             ms.add(pid, c, fname)
@@ -126,16 +126,19 @@ def multistart(cmd_path, design_name, max_iterations, k, ncores=1):
     return ms
 
 def main():
+    #TODO: collect all of this into a params object/dict
     cmd_path = '/Users/.../lipo-b--annealing/run' # path to root directory
     design_name = 'ami33'
     ncores = 1
+    parratype = 'threaded' # determines joblib backend - either multiple threads or multiple cores
     max_iterations = 2
     k = 5 # split on top 5 results
 
     ms = multistart(cmd_path, design_name, max_iterations, k, ncores)
     ms.tree.print_tree()
     print()
-    print('hpwl: {} fname: ./tmp/{}.rpt'.format(ms.get_topk()[0][0], ms.get_topk()[-1][0]))
+    print('hpwl: {} fname: ./tmp/{}.rpt'.format(ms.get_topk()[0][0],
+                                                ms.get_topk()[-1][0]))
 
 if __name__ == "__main__":
     main()

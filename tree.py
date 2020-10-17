@@ -49,6 +49,9 @@ class MultiStart():
         costs, ids, fnames = zip(*sorted(zip(self.costs, self.ids, self.fnames)))
         return costs[:self.k], ids[:self.k], fnames[:self.k]
 
+    def get_k_new_ids(self):
+        return list(range(len(self.ids), len(self.ids)+self.k))
+
     """
     add entry to the tree
     """
