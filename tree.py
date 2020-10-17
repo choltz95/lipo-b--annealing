@@ -1,3 +1,6 @@
+"""
+Simple tree object
+"""
 class Node(object):
     def __init__(self, id, level=0, cost=0.0, fname="", children = []):
         self.id = id
@@ -32,17 +35,23 @@ class Node(object):
 
 class MultiStart():
     def __init__(self, k, max_iters):
-        self.k = k
-        self.max_iters = max_iters
-        self.tree = Node(0)
-        self.ids = [0]
-        self.costs = [1e10]
-        self.fnames = ['']
+        self.k = k # number of instances to keep
+        self.max_iters = max_iters # maximum number of iterations - max depth of the tree
+        self.tree = Node(0) # root node
+        self.ids = [0] # list of ids
+        self.costs = [1e10] # list of costs
+        self.fnames = [''] # temp filenames
 
+    """
+    get top-k results by sorting on the cost
+    """
     def get_topk(self):
         costs, ids, fnames = zip(*sorted(zip(self.costs, self.ids, self.fnames)))
         return costs[:self.k], ids[:self.k], fnames[:self.k]
 
+    """
+    add entry to the tree
+    """
     def add(self, parentid, cost, fname):
         self.fnames.append(fname)
         self.costs.append(cost)
