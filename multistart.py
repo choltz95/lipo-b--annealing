@@ -37,12 +37,14 @@ def _place_worker(cmd_path, cmd_params):
     # keys:
     return parse
 
-def sample_params():
+def sample_params(level):
     #P, alpha, beta, k, rnd, c
-    return (0.9, 0.0, 1.0, 5.0, 2, 2.0,)
+    # P should depend on the level and determines the inital temperature
+    # T_init = d / log(P) where delta is the mean change in cost between transitions.
+    return (0.9**level, 0.0, 1.0, 5.0, 2, 2.0,)
 
-def _sample_worker(cmd_path, cmd_params, idx):
-    sp = sample_params()
+def _sample_worker(cmd_path, cmd_params, idx, level):
+    sp = sample_params(level)
     result = _place_worker(cmd_path, cmd_params + sp)
     assert len(result) > 0
     cost = float(result[-4][-1])
@@ -53,13 +55,13 @@ def _sample_worker(cmd_path, cmd_params, idx):
 
     return hpwl
 
-def _multistart_worker(cmd_path, design_name,og_design_name, pid, idx):
+def _multistart_worker(ms, cmd_path, design_name, og_design_name, pid, idx):
     outfname = '{}'.format(idx)
 
     #_fn = _partial(_sample_worker, cmd_path, design_name, idx)
-
+    level = ms.tree.find(pid)
     start_time = time.time()
-    cost = _sample_worker(cmd_path, (design_name, og_design_name, outfname,), idx)
+    cost = _sample_worker(cmd_path, (design_name, og_design_name, outfname,), idx, level+1)
     opt_time = time.time() - start_time
 
     #tqdm.write('design: {} params: {} cost: {} in {} sec'.format(design_name, ' '.join([str(x) for x in p]), cost, opt_time))
@@ -67,9 +69,9 @@ def _multistart_worker(cmd_path, design_name,og_design_name, pid, idx):
 
 def multistart(cmd_path, design_name, max_iterations, k, ncores=1):
     ms = MultiStart(k, max_iterations)
-    _worker = _partial(_multistart_worker, cmd_path)
+    _worker = _partial(_multistart_worker, ms, cmd_path)
 
-    curids = list(range(k))
+    curids = [0]*k
     curfnames = [design_name]*k
     # spawn an annealer for each instance
     res = Parallel(n_jobs=ncores)(delayed(_worker)(fname, design_name, pid, idx) for idx, (fname, pid) in enumerate(tqdm(zip(curfnames,curids))))
@@ -91,7 +93,7 @@ def multistart(cmd_path, design_name, max_iterations, k, ncores=1):
     return ms
 
 def main():
-    cmd_path = '/Users/.../lipo-b--annealing/run'
+    cmd_path = '/Users/orange3xchicken/lipo-b--annealing/run'
     design_name = 'ami33'
     ncores = 1
     max_iterations = 1
@@ -102,7 +104,6 @@ def main():
     ms.tree.print_tree()
     print()
     print('hpwl: {} fname: ./tmp/{}.rpt'.format(ms.get_topk()[0][0], ms.get_topk()[-1][0]))
-
 
 if __name__ == "__main__":
     main()
