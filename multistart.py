@@ -12,6 +12,7 @@ import sys, time
 
 """
 Pickleable partial wrapper
+the canonical partial'd function object is not pickleable
 """
 def _partial(func, *part_args):
     def wrapper(*extra_args):
@@ -41,6 +42,7 @@ def _place_worker(cmd_path, cmd_params):
     returncode = res.returncode
     stdout = res.stdout
     stderr = res.stderr
+    # parses annealer report (example given at the bottom of this file)
     parse = [[string.lower().strip() for string in line.split()] for line in stdout.splitlines()]
     parse = [['_'.join(x[:-1])] + [x[-1]] if (len(x) > 1 and ':' in x[-2]) else '_'.join(x) for x in parse]
     parse = parse[1:-1]
@@ -50,6 +52,7 @@ def _place_worker(cmd_path, cmd_params):
 """
 Given a level of the tree (or other info)
 samples a set of parameters for annealer
+See Yao-wen Chang's ISPD paper on Fast-Annealing
 """
 def sample_params(level):
     #P, alpha, beta, k, rnd, c

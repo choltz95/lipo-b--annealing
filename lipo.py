@@ -1,3 +1,6 @@
+"""
+BROKEN - NEEDS REFACTORING AFTER MULTISTART RE-WRITE
+"""
 from copy import deepcopy
 from functools import reduce
 import operator
