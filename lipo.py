@@ -12,11 +12,31 @@ from tqdm import tqdm
 import dlib
 import sys, time
 
+"""
+Pickleable partial wrapper
+the canonical partial'd function object is not pickleable
+"""
+def _partial(func, *part_args):
+    def wrapper(*extra_args):
+        args = list(part_args)
+        args.extend(extra_args)
+        return func(*args)
+    return wrapper
+
+"""
+Process _worker
+takes list of commands
+and passes to subprocess
+"""
 def _process_worker(cmd):
     cmd = [str(cm) for cm in cmd]
     print(cmd)
     return run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
 
+"""
+place worker
+calls process worker and parses annealer feedback
+"""
 def _place_worker(cmd_path, cmd_params):
     cmd = ['sh', cmd_path, *cmd_params]
     cmd.insert(-1,2)
@@ -25,37 +45,33 @@ def _place_worker(cmd_path, cmd_params):
     returncode = res.returncode
     stdout = res.stdout
     stderr = res.stderr
-
+    # parses annealer report (example given at the bottom of this file)
     parse = [[string.lower().strip() for string in line.split()] for line in stdout.splitlines()]
     parse = [['_'.join(x[:-1])] + [x[-1]] if (len(x) > 1 and ':' in x[-2]) else '_'.join(x) for x in parse]
-
-    # remove header and footer
     parse = parse[1:-1]
 
-    # keys:
     return parse
 
+"""
+Abstract annealer worker
+calls place worker and parses feedback
+into floats
+"""
 def _sample_worker(cmd_path, cmd_params, *sample_params):
     result = _place_worker(cmd_path, (cmd_params,) + sample_params)
     assert len(result) > 0
     cost = float(result[-4][-1])
     area = float(result[-8][-1])
     hpwl = float(result[-6][-1])
-
     log = ','.join([str(sp) for sp in sample_params]+[str(cost), str(area),str(hpwl)])
-
     with open('./log/'+cmd_params+'_log.txt','a+') as f:
         f.write( log + '\n')
     return hpwl
 
-def _partial(func, *part_args):
-    def wrapper(*extra_args):
-        args = list(part_args)
-        args.extend(extra_args)
-        return func(*args)
-
-    return wrapper
-
+"""
+lipo worker
+individual lipo process
+"""
 def _lipo_worker(cmd_path, design_name):
     #float P = 0.9, alpha_base = 0.5, beta = 0.1, R = float(H)/W;
     #int k = max(2, Nblcks/11), rnd = 2*Nblcks+20;

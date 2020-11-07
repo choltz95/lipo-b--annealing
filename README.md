@@ -1,6 +1,12 @@
 # lipo-b--annealing
 
-Partially based on Prof. Yao-Wen Chang's implementation and materials
+Pile of code for IC layout
+
+B*-Tree Annealer partially based on Prof. Yao-Wen Chang's implementation and materials
+
+Includes Python interface supporting multi-start and parameter tuning via Lipschitz Optimization (LIPO)
+
+Wirelength (HPWL)-driven Mixed Integer Lienar Program (MILP) detailed placer
 
 Parallelism handled with Python through joblib
 
@@ -15,6 +21,7 @@ deps for Python:
 - joblib (parallism)
 - tqdm   (nice progress bars)
 - dlib   (for lcb-lipo tuning framework)
+- CVXPY & Coin-OR for detailed placement
 
 
 ### Build
