@@ -6,7 +6,9 @@ B*-Tree Annealer partially based on Prof. Yao-Wen Chang's implementation and mat
 
 Includes Python interface supporting multi-start and parameter tuning via Lipschitz Optimization (LIPO)
 
-Wirelength (HPWL)-driven Mixed Integer Lienar Program (MILP) detailed placer
+Wirelength (HPWL)-driven Mixed Integer Linear Program (MILP) detailed placer supporting rotation
+and relative positioning constraints defined by the O-Tree. By exploiting the relative position induced by
+the O-Tree, we can get rid of variables necessary for satisfying pairwise overlap constraints
 
 Parallelism handled with Python through joblib
 
@@ -24,7 +26,7 @@ deps for Python:
 - CVXPY & Coin-OR for detailed placement
 
 
-### Build
+### Build Annealer
 >./clean
 
 >cmake .
