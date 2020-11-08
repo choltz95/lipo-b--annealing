@@ -168,8 +168,10 @@ void my_main(int argc, char** argv) {
   ifstream fnets(argv[3], ifstream::in);
   string rptPost = ".rpt";
   string blksPost = ".block";
+  string plPost = ".out.pl";
   ofstream outs1(argv[4]+rptPost, ifstream::out);
   ofstream outs2(argv[4]+blksPost, ifstream::out);
+  ofstream outs3(argv[4]+plPost, ifstream::out);
   int Nnets, W, H, Nblcks, Ntrmns;
 
   string ign;
@@ -200,9 +202,10 @@ void my_main(int argc, char** argv) {
   }
   fp.restore(costs[0]<costs[1] ? trees[0] : trees[1]);
   fp.init();
-  fp.output(outs1, outs2);
+  fp.output(outs1, outs2, outs3);
   outs1.close();
   outs2.close();
+  outs3.close();
 }
 int main(int argc, char** argv) {
   ios_base::sync_with_stdio(false);

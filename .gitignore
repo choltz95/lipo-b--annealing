@@ -1,12 +1,6 @@
 archive/*
 output.rpt
 tmp/*
-!tmp/1.block
-!tmp/1.nets
-!tmp/2.block
-!tmp/2.nets
-!tmp/3.block
-!tmp/3.nets
 !tmp/ami33.block
 !tmp/ami33.nets
 !tmp/ami49.block

@@ -46,7 +46,6 @@ def _place_worker(cmd_path, cmd_params):
     parse = [[string.lower().strip() for string in line.split()] for line in stdout.splitlines()]
     parse = [['_'.join(x[:-1])] + [x[-1]] if (len(x) > 1 and ':' in x[-2]) else '_'.join(x) for x in parse]
     parse = parse[1:-1]
-
     return parse
 
 """
@@ -127,8 +126,8 @@ def multistart(cmd_path, design_name, max_iterations, k, ncores=1):
 
 def main():
     #TODO: collect all of this into a params object/dict
-    cmd_path = '/Users/.../lipo-b--annealing/run' # path to root directory
-    design_name = 'ami33'
+    cmd_path = '/Users/orange3xchicken/lipo-b--annealing/run' # path to root directory
+    design_name = 'apte'
     ncores = 1
     parratype = 'threaded' # determines joblib backend - either multiple threads or multiple cores
     max_iterations = 2

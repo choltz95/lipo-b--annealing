@@ -20,12 +20,14 @@ class Net(object):
 class Box(object):
     """ A box in a floor packing problem. """
     ASPECT_RATIO = 1.0
-    def __init__(self, width, height, idx=0, r=False, min_area=None):
+    def __init__(self, width, height, initialx=0.0, initialy=0.0, idx=0, r=False, min_area=None):
         self.min_area = min_area
         self.h = Constant(width)
         self.w = Constant(height)
         self.x = Variable(nonneg=True)
         self.y = Variable(nonneg=True)
+        self.x.value = initialx
+        self.y.value = initialy
         self.idx = idx
         self.netidxs = []
         
@@ -171,7 +173,7 @@ class FloorPlan(object):
         obj = hpwl
         p = Problem(obj, constraints)
         assert p.is_dqcp()
-        return p.solve(solver=cp.CBC, verbose=True, maximumSeconds=self.max_seconds, numberThreads=self.num_cores), constraints
+        return p.solve(solver=cp.CBC, warm_start=True, verbose=True, maximumSeconds=self.max_seconds, numberThreads=self.num_cores), constraints
 
     def verify_constraints(self, constraints):
         return np.array([c.violation() for c in constraints])

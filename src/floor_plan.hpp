@@ -122,7 +122,7 @@ public:
     }
     return make_tuple(hpwl, MAX_X, MAX_Y);
   }
-  void output(ostream& out1, ostream& out2) const {
+  void output(ostream& out1, ostream& out2, ostream& out3) const {
     //assert(_has_init);
     int width, height, hpwl; tie(hpwl, width, height) = cost();
     out1 << setprecision(13) << _alpha*width*height + (1-_alpha)*hpwl/2. << '\n';
@@ -151,7 +151,23 @@ public:
       out2 << _blcks[_Nblcks+i]._name << " " << "terminal " << int(_blcks[_Nblcks+i]._x) << " "
           << int(_blcks[_Nblcks+i]._y) << '\n';
     }
+
+    out3 << "UCLA pl 1.0"  << '\n';
+    out3 << '\n';
+    out3 << '\n';
+    out3 << '\n';
+    out3 << '\n';
+      out2 << '\n';
+    for(ID i = 1; i<=_Nblcks; ++i) {
+      out3 << _blcks[i]._name << " " << int(_blcks[i]._x) << " " << int(_blcks[i]._y) << '\n';
+    }
+    out3 << '\n';
+    for(ID i = 1; i<=_Ntrmns; ++i) {
+      out3 << _blcks[_Nblcks+i]._name << " " << "terminal " << int(_blcks[_Nblcks+i]._x) << " "
+          << int(_blcks[_Nblcks+i]._y) << '\n';
+    }
   }
+
   void perturb() {
     float p1 = randf(), p2 = randf(), p3 = randf();
     if(p1 < _rot_prob) rotate();
