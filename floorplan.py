@@ -20,21 +20,29 @@ class Net(object):
 class Box(object):
     """ A box in a floor packing problem. """
     ASPECT_RATIO = 1.0
-    def __init__(self, width, height, initialx=0.0, initialy=0.0, idx=0, r=False, min_area=None):
+    def __init__(self, width, height, initialx=0.0, initialy=0.0, initialr=0, idx=0, pl=True, r=False, terminal=False, min_area=None):
         self.min_area = min_area
         self.h = Constant(width)
         self.w = Constant(height)
-        self.x = Variable(nonneg=True)
-        self.y = Variable(nonneg=True)
-        self.x.value = initialx
-        self.y.value = initialy
-        self.idx = idx
-        self.netidxs = []
+        self.terminal = terminal
+        self.pl = pl
+        self.r = r
         
+        if pl:
+            self.x = Variable(nonneg=True)
+            self.y = Variable(nonneg=True)
+            self.x.value = initialx
+            self.y.value = initialy
+        else:
+            self.x = Constant(initialx)
+            self.y = Constant(initialy)        
         if r:
             self.r = Variable(boolean=True)
+            self.r.value = initialr
         else:
-            self.r=Constant(0)
+            self.r=Constant(initialr)
+        self.idx = idx
+        self.netidxs = []
 
     @property
     def position(self):
@@ -69,7 +77,7 @@ class Box(object):
         return self.r.value
 
 class FloorPlan(object):
-    MARGIN = 1.0
+    MARGIN = 0.0
     ASPECT_RATIO = 5.0
     def __init__(self, boxes, nets, boundary_W=100, boundary_H=100, max_seconds=10, num_cores=1):
         self.boxes = boxes
@@ -113,10 +121,11 @@ class FloorPlan(object):
     def layout(self):
         constraints = []
         for box in self.boxes:
+            if (not box.pl):
+                continue
             # Enforce that boxes lie in bounding box. 
-            constraints += [self.height <= self.boundary_H,
-                            self.width <=self.boundary_W]
-
+            #constraints += [self.height <= self.boundary_H,
+            #                self.width <=self.boundary_W]
             constraints += [box.x >= FloorPlan.MARGIN,
                 box.x + box.r*box.h + (1-box.r)*box.w + FloorPlan.MARGIN <= self.width]
             constraints += [box.y >= FloorPlan.MARGIN,
@@ -145,6 +154,9 @@ class FloorPlan(object):
             for j in range(i+1,len(self.boxes)):
                 b_i = self.boxes[i]
                 b_j = self.boxes[j]
+                
+                if (not b_i.pl) or (not b_j.pl):
+                    continue
                 
                 x_i, y_i = b_i.x, b_i.y
                 w_i, h_i = b_i.w, b_i.h
@@ -197,7 +209,7 @@ class FloorPlan(object):
             net = self.nets[k]
             modules = [[p.value for p in self.boxes[i].center] for i in net.moduleidxs]
             mx, my = list(zip(*modules))
-            pylab.plot(mx,my, color='gray',alpha=0.1)
+            pylab.plot(mx,my, color='gray',alpha=0.25)
         
         x,y = self.size
         pylab.axis([0, x, 0, y])

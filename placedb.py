@@ -541,11 +541,17 @@ row height = %g, site width = %g
                     self.net_weights.append(1.0)
                     self.net2pin_map.append([])
                     net_name += 1
-                pos = re.search(r"(\w+)\s+(\w+)\s+:\s*\%([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)\s+\%([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)\s*",line)
+                    continue
+                #pos = re.search(r"(\w+)\s+(\w+)\s+:\s*\%([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)\s+\%([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)\s*",line)
+                pos = re.search(r"(\w+)\s+(\w+)\s*(:?\s*\%?)([+-]?(\d+(\.\d*)?|\.\d+)?([eE][+-]?\d+)?)\s*(\%([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?))?\s*",line)
                 if pos:
                     node_id = self.node_name2id_map[pos.group(1)]
-                    pin_offset_x = float(pos.group(3))
-                    pin_offset_y = float(pos.group(7))
+                    if pos.group(9):
+                        pin_offset_x = float(pos.group(4))#3
+                        pin_offset_y = float(pos.group(9))#7
+                    else:
+                        pin_offset_x=0.0
+                        pin_offset_y=0.0
                     pin_exists = False
                     _pin_id = -1
                     for _pid in self.node2pin_map[node_id]:
