@@ -460,7 +460,7 @@ row height = %g, site width = %g
                     self.node_x[node_id] = float(pos.group(2))
                     self.node_y[node_id] = float(pos.group(6))
                     if pos.group(10) is not None:
-                        self.node_orient[node_id] = pos.group(10)
+                        self.node_orient[node_id] = int(pos.group(10))
                     else:
                         self.node_orient[node_id] = 0
                     orient = pos.group(4)

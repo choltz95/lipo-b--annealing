@@ -8,7 +8,7 @@ NumPins : 522
 
 NetDegree : 34
 # The pad/pins in this net are of type "PWR"
-GND@1 B
+GND B
 bk9d B	: %-50.0 %33.3
 bk9c B	: %8.8 %50.0
 bk9b B	: %38.2 %50.0
@@ -248,7 +248,7 @@ bk9d B	: %32.3 %50.0
 bk9c B	: %-50.0 %-32.3
 NetDegree : 34
 # The pad/pins in this net are of type "PWR"
-POW@1 B
+POW B
 bk9d B	: %50.0 %33.3
 bk9c B	: %-46.0 %50.0
 bk9b B	: %-38.2 %50.0

@@ -159,11 +159,13 @@ public:
     out3 << '\n';
       out2 << '\n';
     for(ID i = 1; i<=_Nblcks; ++i) {
-      out3 << _blcks[i]._name << " " << int(_blcks[i]._x) << " " << int(_blcks[i]._y) << '\n';
+      out3 << _blcks[i]._name << " " << int(_blcks[i]._x) << " " << int(_blcks[i]._y) << " " << int(_blcks[i]._rot) << '\n';
     }
     out3 << '\n';
     for(ID i = 1; i<=_Ntrmns; ++i) {
-      out3 << _blcks[_Nblcks+i]._name << " " << "terminal " << int(_blcks[_Nblcks+i]._x) << " "
+      //out3 << _blcks[_Nblcks+i]._name << " " << "terminal " << int(_blcks[_Nblcks+i]._x) << " "
+      //    << int(_blcks[_Nblcks+i]._y) << '\n';
+      out3 << _blcks[_Nblcks+i]._name << " " << int(_blcks[_Nblcks+i]._x) << " "
           << int(_blcks[_Nblcks+i]._y) << '\n';
     }
   }

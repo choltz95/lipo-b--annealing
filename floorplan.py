@@ -79,15 +79,27 @@ class Box(object):
 class FloorPlan(object):
     MARGIN = 0.0
     ASPECT_RATIO = 5.0
-    def __init__(self, boxes, nets, boundary_W=100, boundary_H=100, max_seconds=10, num_cores=1):
+    def __init__(self, boxes, nets, boundary_W=100, boundary_H=100, max_seconds=10, num_cores=1, name=""):
         self.boxes = boxes
         self.nets = nets
         self.num_nodes = len(boxes)
+        self.name=name
         
         self.boundary_W = Constant(boundary_W)
         self.boundary_H = Constant(boundary_H)
+        
         #self.height = Variable(pos=True)
         #self.width = Variable(pos=True)
+        
+        self.max_x = Variable(pos=True)
+        self.max_x.value = self.boundary_W.value
+        self.max_y = Variable(pos=True)
+        self.max_y.value = self.boundary_H.value
+        self.min_x = Variable(pos=True)
+        self.min_x.value = 0.0
+        self.min_y = Variable(pos=True)
+        self.min_y.value = 0.0
+        
         self.height = Constant(boundary_H)
         self.width = Constant(boundary_W)
         
@@ -118,18 +130,24 @@ class FloorPlan(object):
         return constraints
 
     # Compute minimum perimeter layout.
-    def layout(self):
+    def layout(self, solve=True):
         constraints = []
         for box in self.boxes:
             if (not box.pl):
                 continue
             # Enforce that boxes lie in bounding box. 
-            #constraints += [self.height <= self.boundary_H,
-            #                self.width <=self.boundary_W]
-            constraints += [box.x >= FloorPlan.MARGIN,
-                box.x + box.r*box.h + (1-box.r)*box.w + FloorPlan.MARGIN <= self.width]
-            constraints += [box.y >= FloorPlan.MARGIN,
-                            box.y + box.r*box.w + (1-box.r)*box.h + FloorPlan.MARGIN <= self.height]
+            constraints += [self.min_x <= b.x for b in self.boxes if b.pl]
+            constraints += [self.min_y <= b.y for b in self.boxes if b.pl]
+            constraints += [self.max_x >= b.x for b in self.boxes if b.pl]
+            constraints += [self.max_y >= b.y for b in self.boxes if b.pl]
+            
+            #constraints += [self.max_x - self.min_x <= self.boundary_W,
+            #                self.max_y - self.min_y <=self.boundary_H]
+            
+            #constraints += [box.x >= FloorPlan.MARGIN,
+            #    box.x + box.r*box.h + (1-box.r)*box.w + FloorPlan.MARGIN <= self.width]
+            #constraints += [box.y >= FloorPlan.MARGIN,
+            #                box.y + box.r*box.w + (1-box.r)*box.h + FloorPlan.MARGIN <= self.height]
             
             # Enforce aspect ratios.
             #constraints += [(1/box.ASPECT_RATIO)*box.height <= box.width,
@@ -184,8 +202,9 @@ class FloorPlan(object):
         hpwl = Minimize(cp.sum(hpwls))
         obj = hpwl
         p = Problem(obj, constraints)
-        assert p.is_dqcp()
-        return p.solve(solver=cp.CBC, warm_start=True, verbose=True, maximumSeconds=self.max_seconds, numberThreads=self.num_cores), constraints
+        p = p.solve(solver=cp.CBC, warm_start=True, verbose=True, maximumSeconds=self.max_seconds, numberThreads=self.num_cores)
+        return p, constraints
+            
 
     def verify_constraints(self, constraints):
         return np.array([c.violation() for c in constraints])
@@ -193,6 +212,10 @@ class FloorPlan(object):
     # Show the layout with matplotlib
     def show(self):
         pylab.figure(facecolor='w')
+        max_x = 0.0
+        max_y = 0.0
+        min_x = 1e8
+        min_y = 1e8
         for k in range(len(self.boxes)):
             box = self.boxes[k]
             x,y = box.position
@@ -200,6 +223,11 @@ class FloorPlan(object):
                 h,w = box.size
             else:
                 w,h = box.size
+                
+            if x < min_x: min_x = x
+            if y < min_y: min_y = y
+            if x+w > max_x: max_x = x
+            if y+w > max_y: max_y = y
                 
             pylab.fill([x, x, x + w, x + w],
                        [y, y+h, y+h, y])
@@ -211,8 +239,7 @@ class FloorPlan(object):
             mx, my = list(zip(*modules))
             pylab.plot(mx,my, color='gray',alpha=0.25)
         
-        x,y = self.size
-        pylab.axis([0, x, 0, y])
+        pylab.axis([min_x, max_x, min_y, max_y])
         pylab.xticks([])
         pylab.yticks([])
 
