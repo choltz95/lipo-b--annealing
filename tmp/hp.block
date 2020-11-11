@@ -2,17 +2,17 @@ Outline: 3866 2646
 NumBlocks: 11                                                                             
 NumTerminals: 45
 
-clkc  1036  462
-clkd  378   700
-cmp1  980   210
-cmp2  980   210
-cmp3  980   210
-cntd  3304  546
-cntu  3304  546
-npd   2016  252
-nps   3080  462
-ppd   2016  252
-pps   3080  462
+clkc  1036  462	0 0
+clkd  378   700 0 0
+cmp1  980   210 0 0
+cmp2  980   210 0 0
+cmp3  980   210 0 0
+cntd  3304  546 0 0
+cntu  3304  546 0 0
+npd   2016  252 0 0
+nps   3080  462 0 0
+ppd   2016  252 0 0
+pps   3080  462 0 0
 
 bu7 terminal        4648	4200  
 rs2 terminal        4312	4200  

@@ -127,7 +127,7 @@ def multistart(cmd_path, design_name, max_iterations, k, ncores=1):
 def main():
     #TODO: collect all of this into a params object/dict
     cmd_path = '/home/orange3xchicken/milp/lipo-b--annealing/run' # path to root directory
-    design_name = 'ami33'
+    design_name = 'xerox'
     ncores = 1
     parratype = 'threaded' # determines joblib backend - either multiple threads or multiple cores
     max_iterations = 2
